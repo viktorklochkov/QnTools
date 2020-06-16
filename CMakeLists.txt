@@ -53,6 +53,11 @@ endif (CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
 find_package(ROOT REQUIRED COMPONENTS Core MathCore MathMore RIO Hist Tree Net TreePlayer)
 include(${ROOT_USE_FILE})
 message(STATUS "Using ROOT: ${ROOT_VERSION} <${ROOT_CONFIG}>")
+
+if(NOT ROOT_BINDIR)
+    set(ROOT_BINDIR ${ROOT_DIR}/../bin/)
+endif()
+
 set(ROOTCLING ${ROOT_BINDIR}/rootcling)
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
