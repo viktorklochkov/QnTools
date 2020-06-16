@@ -156,8 +156,8 @@ class QVector {
     n_ = 0;
     sum_weights_ = 0.;
     quality_ = false;
+    for (auto &q : q_) { q = QVec(); }
   }
-
   /**
    * Get a c-style array of all activated harmonics. Used to create the correction histograms
    * @param store Pointer to the first element of the array.
