@@ -121,7 +121,7 @@ man.AddVariable("weight_trk_" + std::to_string(i), displaced_weights + i, 1);
 
 TrackingDetector<std::mt19937_64>
     detpsi({"DetPsi", kGranularity, 0, 2 * M_PI}, []([[maybe_unused]] const double phi) { return true; });
-detpsi.SetChannelEfficencies(efficiencies.at(0));
+//detpsi.SetChannelEfficencies(efficiencies.at(0));
 man.AddVariable("weight_psi", kPsiWeight, 1);
 man.AddVariable("pT", kPt, 1);
 man.AddVariable("rapidity", kRapidity, 1);
@@ -160,7 +160,7 @@ man.AddHisto1D(name, {"rapidity", 1000, -1., 1.}, "Ones");
 }
 
 std::string weight_name("weight_psi");
-man.AddDetector("DetPsi", Qn::DetectorType::TRACK, "psi", weight_name, {}, {1, 2});
+man.AddDetector("DetPsi", Qn::DetectorType::CHANNEL, "psi", "Ones", {}, {1, 2});
 man.SetOutputQVectors("DetPsi", {Qn::QVector::CorrectionStep::PLAIN});
 
 man.InitializeOnNode();
@@ -174,7 +174,7 @@ man.Reset();
 values[kEvent] = 0.5;
 if (man.ProcessEvent()) {
 auto psi = psi_distribution(engine1);
-//      values[kPsi] = psi;
+values[kPsi] = psi;
 //Tracking
 for (int n = 0; n < 100; ++n) {
 auto phi = gen.GetPhi(engine1, psi);
@@ -191,10 +191,11 @@ detectors_trk.at(j).Detect(phi);
 detectors_trk.at(j).FillDataRec(engine3, values, displaced_phi, displaced_weights + j);
 ndettrk++;
 }
-detpsi.Detect(psi);
-detpsi.FillDataRec(engine3, values, kPsi, kPsiWeight);
+//detpsi.Detect(psi);
+//detpsi.FillDataRec(engine3, values, kPsi, kPsiWeight);
 man.FillTrackingDetectors();
 }
+man.FillChannelDetectors();
 }
 man.ProcessCorrections();
 }
@@ -260,8 +261,8 @@ auto out_file = new TFile("correlationout.root", "RECREATE");
 out_file->cd();
 std::vector<Qn::DataContainerStats> stats;
 for (auto &correlation : correlations) {
-//    correlation.second.GetValue().GetDataContainer().Write(correlation.first.data());
-stats.push_back(correlation.second.GetValue().GetDataContainer());
+  correlation.second.GetValue().GetDataContainer().Write(correlation.first.data());
+  stats.push_back(correlation.second.GetValue().GetDataContainer());
 }
 out_file->Close();
 
